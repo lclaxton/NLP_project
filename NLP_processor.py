@@ -48,10 +48,11 @@ df.iloc[:,7] = df.iloc[:,7].apply(lambda x:" ".join(x))
 from sklearn.feature_extraction.text import CountVectorizer
 
 # Might take awhile...
-max_feature_length = 15
+max_feature_length = 10
 
 list_of_transformers=[]
 top_word_dataframes = []
+
 for i in np.arange(1,4,1):
     bow_transformer = CountVectorizer(max_features=max_feature_length,ngram_range=(i,i)).fit(df.iloc[:,7])
     bow = bow_transformer.transform([' '.join(df.iloc[:,7].values)])
@@ -63,3 +64,12 @@ for i in np.arange(1,4,1):
     top_word_dataframes.append(top_counts)
     
 print(top_word_dataframes)
+
+
+# To do:
+    # Calculate term frequency 
+    # Make some plots?
+    # Add in a machine learning element
+        # Add new column for would I like this job
+        # get model to predict whether I would like that job or not or should I apply
+        
