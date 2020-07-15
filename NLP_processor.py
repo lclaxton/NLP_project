@@ -21,13 +21,14 @@ def remove_punctuation(text):
     no_punct = "".join([c for c in text if c not in string.punctuation])
     return no_punct
 df.iloc[:,7] = df.iloc[:,7].apply(lambda x: remove_punctuation(x.lower()))
-
+df.iloc[:,8] = df.iloc[:,8].apply(lambda x: remove_punctuation(x.lower()))
 
 # Now to tokenize the words to enable stopword removal
 from nltk.tokenize import RegexpTokenizer
 
 tokenizer = RegexpTokenizer(r'\w+')
 df.iloc[:,7] = df.iloc[:,7].apply(lambda x: tokenizer.tokenize(x.lower()))
+df.iloc[:,8] = df.iloc[:,8].apply(lambda x: tokenizer.tokenize(x.lower()))
 
 specific_words = ['experience','ability','skills','strong','etc']
 
@@ -39,10 +40,11 @@ def remove_stopwords(text):
     return additional_words
 
 df.iloc[:,7] = df.iloc[:,7].apply(lambda x: remove_stopwords(x))
+df.iloc[:,8] = df.iloc[:,8].apply(lambda x: remove_stopwords(x))
 
 # Now to recombine for analysis
 df.iloc[:,7] = df.iloc[:,7].apply(lambda x:" ".join(x))
-
+df.iloc[:,8] = df.iloc[:,8].apply(lambda x:" ".join(x))
 
 # Begin vectorisation
 from sklearn.feature_extraction.text import CountVectorizer
@@ -66,6 +68,20 @@ for i in np.arange(1,4,1):
 print(top_word_dataframes)
 
 
+list_of_transformers_responsibilites =[]
+top_word_responsibilities = []
+
+for i in np.arange(1,4,1):
+    bow_transformer = CountVectorizer(max_features=max_feature_length,ngram_range=(i,i)).fit(df.iloc[:,8])
+    bow = bow_transformer.transform([' '.join(df.iloc[:,8].values)])
+    list_of_transformers_responsibilites.append(bow)
+    word_list = bow_transformer.get_feature_names()
+    count_list = bow.toarray().sum(axis=0) 
+    top_counts = pd.DataFrame(zip(word_list,count_list),columns=['term','count',])
+    top_counts.sort_values('count',axis=0,inplace=True, ascending=False)
+    top_word_responsibilities.append(top_counts)
+
+print(top_word_responsibilities)
 # To do:
     # Calculate term frequency 
     # Make some plots?
